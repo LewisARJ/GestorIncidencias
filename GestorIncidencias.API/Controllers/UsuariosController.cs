@@ -1,3 +1,4 @@
+using GestorIncidencias.API.Data;
 using GestorIncidencias.API.Models.Dtos;
 using GestorIncidencias.API.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -8,19 +9,24 @@ namespace GestorIncidencias.API.Controllers;
 [Route("api/[controller]")]
 public class UsuariosController : ControllerBase
 {
-    private static readonly List<Usuario> _usuarios = new();
-    private static int _siguienteId = 1;
+    private readonly DataContext _context;
+
+    public UsuariosController(DataContext context)
+    {
+        _context = context;
+    }
 
     [HttpGet]
     public ActionResult<IEnumerable<UsuarioDto>> GetAll()
     {
-        return Ok(_usuarios.Select(ToDto));
+        var usuarios = _context.Usuarios.ToList();
+        return Ok(usuarios.Select(ToDto));
     }
 
     [HttpGet("{id}")]
     public ActionResult<UsuarioDto> GetById(int id)
     {
-        var usuario = _usuarios.FirstOrDefault(u => u.Id == id);
+        var usuario = _context.Usuarios.Find(id);
         if (usuario == null) return NotFound();
         return Ok(ToDto(usuario));
     }
@@ -30,32 +36,34 @@ public class UsuariosController : ControllerBase
     {
         var usuario = new Usuario
         {
-            Id = _siguienteId++,
             Nombre = dto.Nombre,
             Departamento = dto.Departamento,
             Correo = dto.Correo
         };
-        _usuarios.Add(usuario);
+        _context.Usuarios.Add(usuario);
+        _context.SaveChanges();
         return CreatedAtAction(nameof(GetById), new { id = usuario.Id }, ToDto(usuario));
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(int id, CreateUsuarioDto dto)
     {
-        var usuario = _usuarios.FirstOrDefault(u => u.Id == id);
+        var usuario = _context.Usuarios.Find(id);
         if (usuario == null) return NotFound();
         usuario.Nombre = dto.Nombre;
         usuario.Departamento = dto.Departamento;
         usuario.Correo = dto.Correo;
+        _context.SaveChanges();
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        var usuario = _usuarios.FirstOrDefault(u => u.Id == id);
+        var usuario = _context.Usuarios.Find(id);
         if (usuario == null) return NotFound();
-        _usuarios.Remove(usuario);
+        _context.Usuarios.Remove(usuario);
+        _context.SaveChanges();
         return NoContent();
     }
 
