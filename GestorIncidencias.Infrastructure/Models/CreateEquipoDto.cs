@@ -1,8 +1,7 @@
-namespace GestorIncidencias.API.Models.Dtos;
+namespace GestorIncidencias.Infrastructure.Models;
 
-public class EquipoDto
+public class CreateEquipoDto
 {
-    public int Id { get; set; }
     public string Codigo { get; set; } = "";
     public string Tipo { get; set; } = "";
     public string Estado { get; set; } = "";

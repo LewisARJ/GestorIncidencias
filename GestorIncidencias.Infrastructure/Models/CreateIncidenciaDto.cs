@@ -1,4 +1,4 @@
-namespace GestorIncidencias.API.Models.Dtos;
+namespace GestorIncidencias.Infrastructure.Models;
 
 public class CreateIncidenciaDto
 {
