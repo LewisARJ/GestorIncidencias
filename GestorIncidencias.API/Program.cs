@@ -1,4 +1,7 @@
 using GestorIncidencias.Infrastructure.Context;
+using GestorIncidencias.Infrastructure.Core;
+using GestorIncidencias.Infrastructure.Interfaces;
+using GestorIncidencias.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +12,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IIncidenciaRepository, IncidenciaRepository>();
 
 var app = builder.Build();
 

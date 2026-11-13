@@ -1,6 +1,6 @@
-using GestorIncidencias.Infrastructure.Context;
-using GestorIncidencias.Infrastructure.Models;
 using GestorIncidencias.Domain.Entities;
+using GestorIncidencias.Infrastructure.Interfaces;
+using GestorIncidencias.Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestorIncidencias.API.Controllers;
@@ -9,24 +9,36 @@ namespace GestorIncidencias.API.Controllers;
 [Route("api/[controller]")]
 public class IncidenciasController : ControllerBase
 {
-    private readonly DataContext _context;
+    private readonly IIncidenciaRepository _incidencias;
+    private readonly IUsuarioRepository _usuarios;
+    private readonly IBaseRepository<Equipo> _equipos;
+    private readonly IBaseRepository<Tecnico> _tecnicos;
 
-    public IncidenciasController(DataContext context)
+    public IncidenciasController(
+        IIncidenciaRepository incidencias,
+        IUsuarioRepository usuarios,
+        IBaseRepository<Equipo> equipos,
+        IBaseRepository<Tecnico> tecnicos)
     {
-        _context = context;
+        _incidencias = incidencias;
+        _usuarios = usuarios;
+        _equipos = equipos;
+        _tecnicos = tecnicos;
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<IncidenciaDto>> GetAll()
+    public ActionResult<IEnumerable<IncidenciaDto>> GetAll([FromQuery] string? estado)
     {
-        var incidencias = _context.Incidencias.ToList();
-        return Ok(incidencias.Select(ToDto));
+        var lista = string.IsNullOrWhiteSpace(estado)
+            ? _incidencias.GetAll()
+            : _incidencias.GetByEstado(estado);
+        return Ok(lista.Select(ToDto));
     }
 
     [HttpGet("{id}")]
     public ActionResult<IncidenciaDto> GetById(int id)
     {
-        var incidencia = _context.Incidencias.Find(id);
+        var incidencia = _incidencias.GetById(id);
         if (incidencia == null) return NotFound();
         return Ok(ToDto(incidencia));
     }
@@ -34,9 +46,9 @@ public class IncidenciasController : ControllerBase
     [HttpPost]
     public ActionResult<IncidenciaDto> Create(CreateIncidenciaDto dto)
     {
-        if (!_context.Usuarios.Any(u => u.Id == dto.UsuarioId))
+        if (_usuarios.GetById(dto.UsuarioId) == null)
             return BadRequest("El usuario indicado no existe.");
-        if (!_context.Equipos.Any(e => e.Id == dto.EquipoId))
+        if (_equipos.GetById(dto.EquipoId) == null)
             return BadRequest("El equipo indicado no existe.");
 
         var incidencia = new Incidencia
@@ -48,34 +60,32 @@ public class IncidenciasController : ControllerBase
             UsuarioId = dto.UsuarioId,
             EquipoId = dto.EquipoId
         };
-        _context.Incidencias.Add(incidencia);
-        _context.SaveChanges();
+        _incidencias.Add(incidencia);
         return CreatedAtAction(nameof(GetById), new { id = incidencia.Id }, ToDto(incidencia));
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(int id, UpdateIncidenciaDto dto)
     {
-        var incidencia = _context.Incidencias.Find(id);
+        var incidencia = _incidencias.GetById(id);
         if (incidencia == null) return NotFound();
-        if (dto.TecnicoId != null && !_context.Tecnicos.Any(t => t.Id == dto.TecnicoId))
+        if (dto.TecnicoId != null && _tecnicos.GetById(dto.TecnicoId.Value) == null)
             return BadRequest("El técnico indicado no existe.");
 
         incidencia.Prioridad = dto.Prioridad;
         incidencia.Estado = dto.Estado;
         incidencia.Solucion = dto.Solucion;
         incidencia.TecnicoId = dto.TecnicoId;
-        _context.SaveChanges();
+        _incidencias.Update(incidencia);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        var incidencia = _context.Incidencias.Find(id);
+        var incidencia = _incidencias.GetById(id);
         if (incidencia == null) return NotFound();
-        _context.Incidencias.Remove(incidencia);
-        _context.SaveChanges();
+        _incidencias.Remove(incidencia);
         return NoContent();
     }
 

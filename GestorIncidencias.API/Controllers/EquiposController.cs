@@ -1,6 +1,6 @@
-using GestorIncidencias.Infrastructure.Context;
-using GestorIncidencias.Infrastructure.Models;
 using GestorIncidencias.Domain.Entities;
+using GestorIncidencias.Infrastructure.Interfaces;
+using GestorIncidencias.Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestorIncidencias.API.Controllers;
@@ -9,24 +9,23 @@ namespace GestorIncidencias.API.Controllers;
 [Route("api/[controller]")]
 public class EquiposController : ControllerBase
 {
-    private readonly DataContext _context;
+    private readonly IBaseRepository<Equipo> _equipos;
 
-    public EquiposController(DataContext context)
+    public EquiposController(IBaseRepository<Equipo> equipos)
     {
-        _context = context;
+        _equipos = equipos;
     }
 
     [HttpGet]
     public ActionResult<IEnumerable<EquipoDto>> GetAll()
     {
-        var equipos = _context.Equipos.ToList();
-        return Ok(equipos.Select(ToDto));
+        return Ok(_equipos.GetAll().Select(ToDto));
     }
 
     [HttpGet("{id}")]
     public ActionResult<EquipoDto> GetById(int id)
     {
-        var equipo = _context.Equipos.Find(id);
+        var equipo = _equipos.GetById(id);
         if (equipo == null) return NotFound();
         return Ok(ToDto(equipo));
     }
@@ -40,30 +39,28 @@ public class EquiposController : ControllerBase
             Tipo = dto.Tipo,
             Estado = dto.Estado
         };
-        _context.Equipos.Add(equipo);
-        _context.SaveChanges();
+        _equipos.Add(equipo);
         return CreatedAtAction(nameof(GetById), new { id = equipo.Id }, ToDto(equipo));
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(int id, CreateEquipoDto dto)
     {
-        var equipo = _context.Equipos.Find(id);
+        var equipo = _equipos.GetById(id);
         if (equipo == null) return NotFound();
         equipo.Codigo = dto.Codigo;
         equipo.Tipo = dto.Tipo;
         equipo.Estado = dto.Estado;
-        _context.SaveChanges();
+        _equipos.Update(equipo);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        var equipo = _context.Equipos.Find(id);
+        var equipo = _equipos.GetById(id);
         if (equipo == null) return NotFound();
-        _context.Equipos.Remove(equipo);
-        _context.SaveChanges();
+        _equipos.Remove(equipo);
         return NoContent();
     }
 
