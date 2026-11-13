@@ -1,7 +1,7 @@
 using GestorIncidencias.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace GestorIncidencias.API.Data;
+namespace GestorIncidencias.Infrastructure.Context;
 
 public class DataContext : DbContext
 {

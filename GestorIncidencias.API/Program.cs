@@ -1,4 +1,4 @@
-using GestorIncidencias.API.Data;
+using GestorIncidencias.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

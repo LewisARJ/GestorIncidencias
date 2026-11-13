@@ -1,4 +1,4 @@
-using GestorIncidencias.API.Data;
+using GestorIncidencias.Infrastructure.Context;
 using GestorIncidencias.API.Models.Dtos;
 using GestorIncidencias.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
