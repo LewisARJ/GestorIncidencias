@@ -1,4 +1,4 @@
-using GestorIncidencias.API.Models.Entities;
+using GestorIncidencias.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestorIncidencias.API.Data;

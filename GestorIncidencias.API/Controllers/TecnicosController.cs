@@ -1,6 +1,6 @@
 using GestorIncidencias.API.Data;
 using GestorIncidencias.API.Models.Dtos;
-using GestorIncidencias.API.Models.Entities;
+using GestorIncidencias.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestorIncidencias.API.Controllers;

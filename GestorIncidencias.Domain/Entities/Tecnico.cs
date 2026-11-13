@@ -1,4 +1,4 @@
-namespace GestorIncidencias.API.Models.Entities;
+namespace GestorIncidencias.Domain.Entities;
 
 public class Tecnico
 {

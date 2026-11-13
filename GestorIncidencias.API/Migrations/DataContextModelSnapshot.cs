@@ -22,7 +22,7 @@ namespace GestorIncidencias.API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("GestorIncidencias.API.Models.Entities.Equipo", b =>
+            modelBuilder.Entity("GestorIncidencias.Domain.Entities.Equipo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,7 +47,7 @@ namespace GestorIncidencias.API.Migrations
                     b.ToTable("Equipos");
                 });
 
-            modelBuilder.Entity("GestorIncidencias.API.Models.Entities.Incidencia", b =>
+            modelBuilder.Entity("GestorIncidencias.Domain.Entities.Incidencia", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,7 +93,7 @@ namespace GestorIncidencias.API.Migrations
                     b.ToTable("Incidencias");
                 });
 
-            modelBuilder.Entity("GestorIncidencias.API.Models.Entities.Tecnico", b =>
+            modelBuilder.Entity("GestorIncidencias.Domain.Entities.Tecnico", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -114,7 +114,7 @@ namespace GestorIncidencias.API.Migrations
                     b.ToTable("Tecnicos");
                 });
 
-            modelBuilder.Entity("GestorIncidencias.API.Models.Entities.Usuario", b =>
+            modelBuilder.Entity("GestorIncidencias.Domain.Entities.Usuario", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -139,19 +139,19 @@ namespace GestorIncidencias.API.Migrations
                     b.ToTable("Usuarios");
                 });
 
-            modelBuilder.Entity("GestorIncidencias.API.Models.Entities.Incidencia", b =>
+            modelBuilder.Entity("GestorIncidencias.Domain.Entities.Incidencia", b =>
                 {
-                    b.HasOne("GestorIncidencias.API.Models.Entities.Equipo", "Equipo")
+                    b.HasOne("GestorIncidencias.Domain.Entities.Equipo", "Equipo")
                         .WithMany()
                         .HasForeignKey("EquipoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GestorIncidencias.API.Models.Entities.Tecnico", "Tecnico")
+                    b.HasOne("GestorIncidencias.Domain.Entities.Tecnico", "Tecnico")
                         .WithMany()
                         .HasForeignKey("TecnicoId");
 
-                    b.HasOne("GestorIncidencias.API.Models.Entities.Usuario", "Usuario")
+                    b.HasOne("GestorIncidencias.Domain.Entities.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
