@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="GestorIncidencias.API/GestorIncidencias.API.csproj" />
+  <Project Path="GestorIncidencias.Application/GestorIncidencias.Application.csproj" />
   <Project Path="GestorIncidencias.Domain/GestorIncidencias.Domain.csproj" />
   <Project Path="GestorIncidencias.Infrastructure/GestorIncidencias.Infrastructure.csproj" />
 </Solution>

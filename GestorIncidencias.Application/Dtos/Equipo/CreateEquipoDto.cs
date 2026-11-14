@@ -1,4 +1,4 @@
-namespace GestorIncidencias.Infrastructure.Models;
+namespace GestorIncidencias.Application.Dtos;
 
 public class CreateEquipoDto
 {

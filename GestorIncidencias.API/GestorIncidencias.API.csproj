@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GestorIncidencias.Domain\GestorIncidencias.Domain.csproj" />
     <ProjectReference Include="..\GestorIncidencias.Infrastructure\GestorIncidencias.Infrastructure.csproj" />
+    <ProjectReference Include="..\GestorIncidencias.Application\GestorIncidencias.Application.csproj" />
   </ItemGroup>
 
 </Project>
