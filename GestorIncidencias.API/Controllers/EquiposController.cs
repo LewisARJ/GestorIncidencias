@@ -1,5 +1,4 @@
-using GestorIncidencias.Domain.Entities;
-using GestorIncidencias.Infrastructure.Interfaces;
+using GestorIncidencias.Application.Contract;
 using GestorIncidencias.Application.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,66 +8,45 @@ namespace GestorIncidencias.API.Controllers;
 [Route("api/[controller]")]
 public class EquiposController : ControllerBase
 {
-    private readonly IBaseRepository<Equipo> _equipos;
+    private readonly IEquipoService _service;
 
-    public EquiposController(IBaseRepository<Equipo> equipos)
+    public EquiposController(IEquipoService service)
     {
-        _equipos = equipos;
+        _service = service;
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<EquipoDto>> GetAll()
+    public IActionResult GetAll()
     {
-        return Ok(_equipos.GetAll().Select(ToDto));
+        var result = _service.GetAllEquipos();
+        return StatusCode(result.StatusCode, result);
     }
 
     [HttpGet("{id}")]
-    public ActionResult<EquipoDto> GetById(int id)
+    public IActionResult GetById(int id)
     {
-        var equipo = _equipos.GetById(id);
-        if (equipo == null) return NotFound();
-        return Ok(ToDto(equipo));
+        var result = _service.GetEquipoById(id);
+        return StatusCode(result.StatusCode, result);
     }
 
     [HttpPost]
-    public ActionResult<EquipoDto> Create(CreateEquipoDto dto)
+    public IActionResult Create(CreateEquipoDto dto)
     {
-        var equipo = new Equipo
-        {
-            Codigo = dto.Codigo,
-            Tipo = dto.Tipo,
-            Estado = dto.Estado
-        };
-        _equipos.Add(equipo);
-        return CreatedAtAction(nameof(GetById), new { id = equipo.Id }, ToDto(equipo));
+        var result = _service.CreateEquipo(dto);
+        return StatusCode(result.StatusCode, result);
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(int id, CreateEquipoDto dto)
     {
-        var equipo = _equipos.GetById(id);
-        if (equipo == null) return NotFound();
-        equipo.Codigo = dto.Codigo;
-        equipo.Tipo = dto.Tipo;
-        equipo.Estado = dto.Estado;
-        _equipos.Update(equipo);
-        return NoContent();
+        var result = _service.UpdateEquipo(id, dto);
+        return StatusCode(result.StatusCode, result);
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        var equipo = _equipos.GetById(id);
-        if (equipo == null) return NotFound();
-        _equipos.Remove(equipo);
-        return NoContent();
+        var result = _service.DeleteEquipo(id);
+        return StatusCode(result.StatusCode, result);
     }
-
-    private static EquipoDto ToDto(Equipo e) => new()
-    {
-        Id = e.Id,
-        Codigo = e.Codigo,
-        Tipo = e.Tipo,
-        Estado = e.Estado
-    };
 }

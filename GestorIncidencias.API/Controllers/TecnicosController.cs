@@ -1,5 +1,4 @@
-using GestorIncidencias.Domain.Entities;
-using GestorIncidencias.Infrastructure.Interfaces;
+using GestorIncidencias.Application.Contract;
 using GestorIncidencias.Application.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,67 +8,45 @@ namespace GestorIncidencias.API.Controllers;
 [Route("api/[controller]")]
 public class TecnicosController : ControllerBase
 {
-    private readonly IBaseRepository<Tecnico> _tecnicos;
-    private readonly IIncidenciaRepository _incidencias;
+    private readonly ITecnicoService _service;
 
-    public TecnicosController(IBaseRepository<Tecnico> tecnicos, IIncidenciaRepository incidencias)
+    public TecnicosController(ITecnicoService service)
     {
-        _tecnicos = tecnicos;
-        _incidencias = incidencias;
+        _service = service;
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<TecnicoDto>> GetAll()
+    public IActionResult GetAll()
     {
-        return Ok(_tecnicos.GetAll().Select(ToDto));
+        var result = _service.GetAllTecnicos();
+        return StatusCode(result.StatusCode, result);
     }
 
     [HttpGet("{id}")]
-    public ActionResult<TecnicoDto> GetById(int id)
+    public IActionResult GetById(int id)
     {
-        var tecnico = _tecnicos.GetById(id);
-        if (tecnico == null) return NotFound();
-        return Ok(ToDto(tecnico));
+        var result = _service.GetTecnicoById(id);
+        return StatusCode(result.StatusCode, result);
     }
 
     [HttpPost]
-    public ActionResult<TecnicoDto> Create(CreateTecnicoDto dto)
+    public IActionResult Create(CreateTecnicoDto dto)
     {
-        var tecnico = new Tecnico
-        {
-            Nombre = dto.Nombre,
-            Especialidad = dto.Especialidad
-        };
-        _tecnicos.Add(tecnico);
-        return CreatedAtAction(nameof(GetById), new { id = tecnico.Id }, ToDto(tecnico));
+        var result = _service.CreateTecnico(dto);
+        return StatusCode(result.StatusCode, result);
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(int id, CreateTecnicoDto dto)
     {
-        var tecnico = _tecnicos.GetById(id);
-        if (tecnico == null) return NotFound();
-        tecnico.Nombre = dto.Nombre;
-        tecnico.Especialidad = dto.Especialidad;
-        _tecnicos.Update(tecnico);
-        return NoContent();
+        var result = _service.UpdateTecnico(id, dto);
+        return StatusCode(result.StatusCode, result);
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        var tecnico = _tecnicos.GetById(id);
-        if (tecnico == null) return NotFound();
-        if (_incidencias.ExisteConTecnico(id))
-            return Conflict("El técnico tiene incidencias asignadas y no se puede eliminar.");
-        _tecnicos.Remove(tecnico);
-        return NoContent();
+        var result = _service.DeleteTecnico(id);
+        return StatusCode(result.StatusCode, result);
     }
-
-    private static TecnicoDto ToDto(Tecnico t) => new()
-    {
-        Id = t.Id,
-        Nombre = t.Nombre,
-        Especialidad = t.Especialidad
-    };
 }

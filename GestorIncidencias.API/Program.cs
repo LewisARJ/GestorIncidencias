@@ -1,3 +1,5 @@
+using GestorIncidencias.Application.Contract;
+using GestorIncidencias.Application.Services;
 using GestorIncidencias.Infrastructure.Context;
 using GestorIncidencias.Infrastructure.Core;
 using GestorIncidencias.Infrastructure.Interfaces;
@@ -16,6 +18,11 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IIncidenciaRepository, IncidenciaRepository>();
+
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IEquipoService, EquipoService>();
+builder.Services.AddScoped<ITecnicoService, TecnicoService>();
+builder.Services.AddScoped<IIncidenciaService, IncidenciaService>();
 
 var app = builder.Build();
 
